@@ -1,7 +1,9 @@
 # Kawaii Translator
 
-Small GUI program allowing for quick OCR and translation of text.
-screenshot/video
+Small GUI program allowing for quick OCR with hotkeys and translation of text.
+
+![](screenshots/1.png)
+![](screenshots/2.png)
 
 ## Installation
 
@@ -57,3 +59,4 @@ Built using:
 *   Ability to re-translate single engine
 *   General gui improvements
 *   Paddle OCR support gpu inference
+*   System tray
