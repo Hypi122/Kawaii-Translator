@@ -7,7 +7,11 @@ screenshot/video
 
 You can install Kawaii Translator using pip:
 
-`pip install .[all] `
+```
+git clone https://github.com/Hypi122/Kawaii-Translator
+cd ./Kawaii-Translator
+pip install .[all] 
+```
 
 Or install all ocr engines:
 
