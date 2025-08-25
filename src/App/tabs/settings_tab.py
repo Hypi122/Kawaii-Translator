@@ -170,6 +170,7 @@ class SettingsTab(QWidget):
         
         self.openaiKeyTranslationLabel = QLabel("OpenAI API Key")
         self.openaiKeyTranslationInput = QLineEdit()
+        self.openaiKeyTranslationInput.setEchoMode(QLineEdit.EchoMode.Password)
 
         translation_layout.addWidget(self.translation_preset_btn)
         translation_layout.addLayout(translation_preset_layout)
