@@ -1,0 +1,33 @@
+[project]
+name = "kawaiiTranslator"
+version = "1.0.0"
+dependencies = [
+    "PyQt6", "pynput", "Pillow", "numpy", "opencv-contrib-python", "mss"
+]
+
+[project.optional-dependencies]
+paddle_ocr_cpu = [
+	"paddlepaddle", "paddleocr"
+]
+windows_ocr = [
+	"winocr"
+]
+manga_ocr = [
+	"manga-ocr"
+]
+openai = [
+	"openai"
+]
+google_translate = [
+	"googletrans"
+]
+
+all_ocr = [
+	"kawaiiTranslator[paddle_ocr_cpu,windows_ocr,manga_ocr,openai]"
+]
+all_translation = [
+	"kawaiiTranslator[openai, google_translate]"
+]
+all = [
+	"kawaiiTranslator[all_ocr,all_translation]"
+]
