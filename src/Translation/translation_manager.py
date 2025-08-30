@@ -68,8 +68,16 @@ class TranslationManager:
                 else:
                     print(f"Engine '{name}' could not be initialized.")
     
-    def translate(self, text):
-        for name, engine in self._active_engines.items():
+    def translate(self, text, engine_name=None):
+        if engine_name is not None:
+            if engine_name in self._active_engines:
+                engines = [(engine_name, self._active_engines[engine_name])]
+            else:
+                return
+        else:
+            engines = self._active_engines.items()
+        
+        for name, engine in engines:
             signals = TranslationWorkerSignals()
             worker = TranslationWorker(name, engine, text, signals)
             if engine.supports_streaming:

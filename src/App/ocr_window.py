@@ -81,6 +81,7 @@ class OcrWindow(QWidget):
         self.translationContainerLayout.setContentsMargins(0, 0, 0, 0)
         self.translationContainerLayout.addWidget(self.translationTextboxLabel)
         self.translationWidgets = {}
+        self.retranslateButtons = {}
 
         self.splitter.addWidget(ocrContainer)
         self.splitter.addWidget(translationContainer)
@@ -109,14 +110,37 @@ class OcrWindow(QWidget):
         # Clear the layout
         self.clearLayout(self.translationContainerLayout)
         self.translationWidgets = {}
+        self.retranslateButtons = {}
 
         for engine in self.TranslationManager._active_engines.keys():
             layout = QVBoxLayout()
             text_edit = QPlainTextEdit()
             layout.addWidget(QLabel(engine))
             layout.addWidget(text_edit)
+            
+            # Create and add retranslate button for this engine
+            retranslate_btn = QPushButton(f"Re-translate with {engine}")
+            retranslate_btn.clicked.connect(lambda checked, e=engine: self.on_engine_retranslate_clicked(e))
+            layout.addWidget(retranslate_btn)
+            
             self.translationContainerLayout.addLayout(layout)
             self.translationWidgets[engine] = text_edit
+            self.retranslateButtons[engine] = retranslate_btn
+    
+    def clear_engine_text(self, engine_name):
+        if engine_name in self.translationWidgets:
+            self.translationWidgets[engine_name].setPlainText("")
+
+    def on_engine_retranslate_clicked(self, engine_name):
+        """Handle engine-specific retranslate button clicks"""
+        self.clear_engine_text(engine_name)
+
+        if engine_name in self.retranslateButtons:
+            button = self.retranslateButtons[engine_name]
+            button.setEnabled(False)
+            button.setText("Translating...")
+        
+        self.TranslationManager.translate(self.ocrTextbox.toPlainText(), engine_name=engine_name)
 
     def setOcr(self, text, engineName="Unknown"):
         self.ocrTextboxLabel.setText(f"OCR ({engineName})")
@@ -154,11 +178,19 @@ class OcrWindow(QWidget):
         self.retranslateBtn.setEnabled(True)
         self.retranslateBtn.setText("Re-translate")
 
+        if engine in self.retranslateButtons:
+            self.retranslateButtons[engine].setEnabled(True)
+            self.retranslateButtons[engine].setText(f"Re-translate with {engine}")
+
     @pyqtSlot(str, str)
     def on_translation_error(self, engine, error_text):
         self.setTranslation(f"Error: {error_text}", engine=engine)
         self.retranslateBtn.setEnabled(True)
         self.retranslateBtn.setText("Re-translate")
+
+        if engine in self.retranslateButtons:
+            self.retranslateButtons[engine].setEnabled(True)
+            self.retranslateButtons[engine].setText(f"Re-translate with {engine}")
 
     @pyqtSlot(str, str)
     def on_translation_chunk(self, engine, chunk):
@@ -168,3 +200,7 @@ class OcrWindow(QWidget):
     def on_translation_complete(self, engine):
         self.retranslateBtn.setEnabled(True)
         self.retranslateBtn.setText("Re-translate")
+
+        if engine in self.retranslateButtons:
+            self.retranslateButtons[engine].setEnabled(True)
+            self.retranslateButtons[engine].setText(f"Re-translate with {engine}")
