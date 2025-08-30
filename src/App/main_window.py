@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
             self.ocrWindow.show()
             self.ocrWindow.activateWindow()
             self.ocrWindow.raise_()
-            self.ocrWindow.setOcr(ocrText)
+            self.ocrWindow.setOcr(ocrText, self.OcrManager.getCurrentEngine())
             self.ocrWindow.startRetranslate()
 
         elif action == 'cancel_selection':

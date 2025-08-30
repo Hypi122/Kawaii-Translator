@@ -118,7 +118,8 @@ class OcrWindow(QWidget):
             self.translationContainerLayout.addLayout(layout)
             self.translationWidgets[engine] = text_edit
 
-    def setOcr(self, text):
+    def setOcr(self, text, engineName="Unknown"):
+        self.ocrTextboxLabel.setText(f"OCR ({engineName})")
         self.ocrTextbox.setPlainText(text)
     
     # we can use that for both streaming and non-streaming
