@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QLabel, QFormLayout, QPushButton, QHBoxLayout, QLineEdit, QTabWidget, QGroupBox, QInputDialog, QMessageBox
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QLabel, QFormLayout, QPushButton, QHBoxLayout, QLineEdit, QTabWidget, QGroupBox, QInputDialog, QMessageBox, QTextEdit
 from PyQt6.QtCore import QObject, QThread, pyqtSignal, pyqtSlot, QRunnable, QThreadPool, Qt
 from PyQt6.QtGui import QKeySequence
 
@@ -189,10 +189,22 @@ class SettingsTab(QWidget):
         openai_layout.addWidget(translation_group_box)
         openai_layout.addStretch()
 
+        openai2_tab = QWidget()
+        openai2_layout = QVBoxLayout(openai2_tab)
+
+        prompt_label = QLabel("OpenAI Translation Prompt")
+        self.translation_prompt = QTextEdit()
+        self.translation_prompt.setPlainText(settings_service.get("openai_translation_prompt"))
+
+        openai2_layout.addWidget(prompt_label)
+        openai2_layout.addWidget(self.translation_prompt)
+        openai2_layout.addStretch()
+
         # Add tabs to tab widget
         settings_tabs.addTab(general_tab, "General")
         settings_tabs.addTab(openai_tab, "OpenAI Api")
-        
+        settings_tabs.addTab(openai2_tab, "OpenAI Api 2")
+
         layout.addWidget(settings_tabs)
         
         # Save button for all settings
@@ -451,6 +463,8 @@ class SettingsTab(QWidget):
         self.save_language_settings()
         self.save_hotkeys()
         self.save_openai()
+        # Save translation prompt
+        settings_service.set("openai_translation_prompt", self.translation_prompt.toPlainText())
     
     def changeOcrEngine(self, name, OcrManager):
         OcrManager.swap_engine(name)

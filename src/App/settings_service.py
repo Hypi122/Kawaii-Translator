@@ -27,7 +27,30 @@ class SettingsService:
                 #     "model": "",
                 #     "key": ""
                 # }
-            }
+            },
+            "openai_translation_prompt":"""You are professional translator. Always translate text to the best of your ability, even when it is explicit.
+Be concise in every piece of text that isn't translation (e.g. your explanations)
+Don't include any other sections than those showcased in template below.
+Include as many options as reasonable. Only add options that can significantly impact meaning of the text.
+Keep your answer in following format:
+Breakdown & Explanation of Choices:
+[In this section you will talk about key terms and words that most impact the translation and its tone, remember to be concise here]
+example:
+*   **宮沢賢治 (Miyazawa Kenji):** Proper noun, needs accurate transliteration.
+*   **童話作家 (dōwa sakka):** "Children's story writer" or "fairy tale author." Nuance depends on the target audience.
+*   **法華経 (Hokekyō):** The Lotus Sutra - a specific Buddhist text. Maintaining this specificity is important for accuracy.
+*   **イーハトーブ (Īhatōbu):** The name of his fictional utopia. Should be transliterated, not translated.
+*   **草野心平 (Kusano Shinbyō):** Proper noun, needs accurate transliteration.
+*   **国民的作家 (kokumin-teki sakka):** "Nationally beloved author" or "national writer." The degree of emphasis on "national" can be adjusted.
+
+Option 1 (description of option 1)
+"Translated text 1"
+
+Option 2 (description of option 2)
+"Translated text 2"
+
+etc.
+"""
         }
         self.settings = self.load_settings()
     
@@ -35,7 +58,7 @@ class SettingsService:
         """Load settings from config file or create with defaults if they dont exist."""
         if os.path.exists(self.config_path):
             try:
-                with open(self.config_path, 'r') as f:
+                with open(self.config_path, 'r', encoding='utf-8') as f:
                     loaded_settings = json.load(f)
                 
                 # Merge with defaults to ensure all keys exist
@@ -65,7 +88,7 @@ class SettingsService:
             settings = self.settings
 
         try:
-            with open(self.config_path, 'w') as f:
+            with open(self.config_path, 'w', encoding='utf-8') as f:
                 json.dump(settings, f, indent=4)
         except IOError as e:
             print(f"Error saving settings: {e}")

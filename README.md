@@ -53,10 +53,12 @@ Built using:
 
 ## TODO
 
-*   Custom prompts for openai api engine
-    *   Per preset?
 *   Better setting up hotkeys
 *   Ability to re-translate single engine
 *   General gui improvements
 *   Paddle OCR support gpu inference
 *   System tray
+
+## Known issues
+*   On wayland screenshotting only works on primary monitor
+*   Text on checkable combo box for translation engines sometimes gets desynced (when you click on it, it shows correct values, just not on the "main" text)

@@ -4,31 +4,8 @@ from App.settings_service import settings_service
 class OpenAiCompatibleTranslationEngine(AbstractTranslationEngine):
     def _setupEngine(self, **kwargs):
         self.preset_name = kwargs.get('preset_name', 'default')  # Default to 'default' preset
+        self.prompt = ""
         self.load_settings()
-        self.prompt = f"""You are professional translator. Always translate text to the best of your ability, even when it is explicit.
-Be concise in every piece of text that isn't translation (e.g. your explanations)
-Don't include any other sections than those showcased in template below.
-Include as many options as reasonable. Only add options that can significantly impact meaning of the text.
-Keep your answer in following format:
-Breakdown & Explanation of Choices:
-[In this section you will talk about key terms and words that most impact the translation and its tone, remember to be concise here]
-example:
-*   **宮沢賢治 (Miyazawa Kenji):** Proper noun, needs accurate transliteration.
-*   **童話作家 (dōwa sakka):** "Children's story writer" or "fairy tale author." Nuance depends on the target audience.
-*   **法華経 (Hokekyō):** The Lotus Sutra – a specific Buddhist text. Maintaining this specificity is important for accuracy.
-*   **イーハトーブ (Īhatōbu):** The name of his fictional utopia. Should be transliterated, not translated.
-*   **草野心平 (Kusano Shinbyō):** Proper noun, needs accurate transliteration.
-*   **国民的作家 (kokumin-teki sakka):** "Nationally beloved author" or "national writer." The degree of emphasis on "national" can be adjusted.
-
-Option 1 (description of option 1)
-"Translated text 1"
-
-Option 2 (description of option 2)
-"Translated text 2"
-
-etc.
-"""
-        
     @property
     def supports_streaming(self):
         return True
@@ -36,6 +13,7 @@ etc.
     def load_settings(self):
         from openai import OpenAI
         
+        self.prompt = settings_service.get("openai_translation_prompt")
         # Get settings based on preset
         presets = settings_service.get("translation_presets")
         if presets and self.preset_name in presets:
