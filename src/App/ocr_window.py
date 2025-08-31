@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPlainTextEdit, QLabel, QPushButton, QSplitter
 from PyQt6.QtCore import QObject, QThread, pyqtSignal, pyqtSlot, QRunnable, QThreadPool, Qt
+from PyQt6.QtGui import QTextCursor
 
 class WorkerSignals(QObject):
     """Signals from a running worker thread.
@@ -155,6 +156,10 @@ class OcrWindow(QWidget):
         if engine in self.translationWidgets:
             current_text = self.translationWidgets[engine].toPlainText()
             self.translationWidgets[engine].setPlainText(current_text+text)
+
+            # Auto-scroll to bottom
+            self.translationWidgets[engine].moveCursor(QTextCursor.MoveOperation.End)
+            self.translationWidgets[engine].ensureCursorVisible()
 
     def translateOcr(self, TranslationManager, text):
         TranslationManager.translate(text)

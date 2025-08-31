@@ -54,10 +54,10 @@ Built using:
 ## TODO
 
 *   Better setting up hotkeys
-*   Ability to re-translate single engine
 *   General gui improvements
 *   Paddle OCR support gpu inference
 *   System tray
+*   Ability to add custom context in ocr window for LLM translator
 
 ## Known issues
 *   On wayland screenshotting only works on primary monitor
