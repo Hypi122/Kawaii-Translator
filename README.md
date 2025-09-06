@@ -15,25 +15,31 @@ cd ./Kawaii-Translator
 pip install .[all] 
 ```
 
-Or install all ocr engines:
+### Supported engines
 
-`pip install .[all_ocr]`
+#### OCR Engines
+- **[MangaOCR](https://github.com/kha-white/manga-ocr)**:
+  `pip install .[manga_ocr]`
+- **[OpenAI Compatible](https://github.com/openai/openai-python)**:
+  `pip install .[openai]`
+- **[PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR)** (CPU version):
+  `pip install .[paddle_ocr_cpu]`
+- **[Windows OCR](https://learn.microsoft.com/en-us/uwp/api/windows.media.ocr)** ([winocr](https://github.com/GitHub30/winocr)):
+  `pip install .[windows_ocr]`
 
-Or install all translations engines:
+#### Translation Engines
+- **[OpenAI Compatible](https://github.com/openai/openai-python)**:
+  `pip install .[openai]`
+- **[Google Translate](https://translate.google.com)** ([py-googletrans](https://github.com/ssut/py-googletrans)):
+  `pip install .[google_translate]`
 
-`pip install .[all_translation]`
-
-To install with specific OCR or translation engines, use the following:
-
-*   **Windows OCR:** `pip install .[windows_ocr]`
-*   **MangaOCR:** `pip install .[manga_ocr]`
-*   **PaddleOCR:** `pip install .[paddle_ocr_cpu]`
-*   **OpenAI Compatible (for translation and OCR):** `pip install .[openai]`
-*   **Google Translate:** `pip install .[google_translate]`
-
-You can also combine them, for example:
-
-`pip install .[manga_ocr,openai,google_translate]`
+#### Bulk Installation
+- All OCR engines:
+  `pip install .[all_ocr]`
+- All translation engines:
+  `pip install .[all_translation]`
+- Combined installation (example):
+  `pip install .[manga_ocr,openai,google_translate]`
 
 ## Usage
 You can run Kawaii Translator using:
