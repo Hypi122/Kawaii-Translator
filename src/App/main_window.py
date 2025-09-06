@@ -44,7 +44,17 @@ class MainWindow(QMainWindow):
             self.ocrWindow.raise_()
             self.ocrWindow.setOcr(ocrText, self.OcrManager.getCurrentEngine())
             self.ocrWindow.startRetranslate()
+        elif action == 'only_ocr':
+            img = self.screenshot_controller.start_selection()
 
+            if img is None:
+                return
+            ocrText = self.OcrManager.predict(img)            
+            
+            self.ocrWindow.show()
+            self.ocrWindow.activateWindow()
+            self.ocrWindow.raise_()
+            self.ocrWindow.setOcr(ocrText, self.OcrManager.getCurrentEngine())
         elif action == 'cancel_selection':
             self.screenshot_controller.cancel_selection()
         else:

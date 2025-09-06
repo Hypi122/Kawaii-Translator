@@ -9,6 +9,7 @@ class SettingsService:
             "translation_engine": "Dummy",
             "hotkeys": {
                 "ocr_capture": "<alt>+q",
+                "only_ocr": "<alt>+w",
                 "cancel_selection": "<esc>"
             },
             "source_lang": "ja",

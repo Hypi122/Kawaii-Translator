@@ -63,7 +63,6 @@ class OcrWindow(QWidget):
         self.ocrTextboxLabel = QLabel("Ocr")
         self.ocrTextbox = QPlainTextEdit()
 
-        self.translationTextboxLabel = QLabel("Translated")
 
         self.retranslateBtn = QPushButton("Re-translate")
         self.retranslateBtn.pressed.connect(self.startRetranslate)
@@ -80,7 +79,6 @@ class OcrWindow(QWidget):
         translationContainer = QWidget()
         self.translationContainerLayout = QHBoxLayout(translationContainer)
         self.translationContainerLayout.setContentsMargins(0, 0, 0, 0)
-        self.translationContainerLayout.addWidget(self.translationTextboxLabel)
         self.translationWidgets = {}
         self.retranslateButtons = {}
 
