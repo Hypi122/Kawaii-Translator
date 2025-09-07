@@ -4,7 +4,7 @@ from PyQt6.QtCore import Qt, QPoint, QRect, pyqtSignal, QEventLoop
 
 import numpy as np
 import cv2
-import mss
+from PIL import ImageGrab
 
 class ScreenshotController():
     def __init__(self):
@@ -87,6 +87,14 @@ class ScreenshotOverlay(QWidget):
             rect = QRect(self.startPoint, self.currentPoint).normalized()
             painter.drawRect(rect)
 
+    def reset_state(self):
+        self.startPoint = None
+        self.endPoint = None
+        self.currentPoint = None
+        self.isSelecting = False
+        self.isCancelled = False
+        self.update()
+
     # TODO: FIX AND UNDERSTAND WHATS GOING ON
     # I dont understand how that one is supposed to work
     # So i did it fully with an LLM
@@ -102,12 +110,7 @@ class ScreenshotOverlay(QWidget):
         loop.exec()
 
         if self.isCancelled:
-            self.startPoint = None
-            self.endPoint = None
-            self.currentPoint = None
-            self.isSelecting = False
-            self.isCancelled = False
-            self.update()
+            self.reset_state()
 
         # now that seleciton finished we either have both coords
         # or operation was cancelled by user
@@ -115,25 +118,19 @@ class ScreenshotOverlay(QWidget):
         img = None
         if self.startPoint and self.endPoint:
             screenshot_rect = QRect(self.startPoint, self.endPoint).normalized()
+            
+            # ImageGrab.grab() takes a tuple of (left, top, right, bottom)
+            bbox = (
+                screenshot_rect.x(),
+                screenshot_rect.y(),
+                screenshot_rect.x() + screenshot_rect.width(),
+                screenshot_rect.y() + screenshot_rect.height()
+            )
+            screenshot = ImageGrab.grab(bbox=bbox)
+            
+            # Convert to numpy array (OpenCV format)
+            img = np.array(screenshot)
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
-            with mss.mss() as sct:
-                monitor = {
-                    "top": screenshot_rect.y(),
-                    "left": screenshot_rect.x(),
-                    "width": screenshot_rect.width(),
-                    "height": screenshot_rect.height()
-                }
-                screenshot = sct.grab(monitor)
-                
-                # Convert to numpy array (OpenCV format)
-                img = np.array(screenshot)
-                img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
-
-        # Clear stuff
-        self.startPoint = None
-        self.endPoint = None
-        self.currentPoint = None
-        self.isSelecting = False
-        self.update() # Clear the drawn selection from the overlay
-        
+        self.reset_state()
         return img # np.array image in BGR or None

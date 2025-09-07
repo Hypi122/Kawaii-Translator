@@ -1,8 +1,8 @@
 [project]
 name = "kawaiiTranslator"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
-    "PyQt6", "pynput", "Pillow", "numpy", "opencv-contrib-python", "mss"
+    "PyQt6", "pynput", "Pillow", "numpy", "opencv-contrib-python"
 ]
 
 [project.optional-dependencies]

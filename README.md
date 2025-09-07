@@ -54,7 +54,7 @@ This project has been tested on Python versions 3.13.6 and 3.9.7.
 
 Built using:
 *   **GUI:** PyQt6
-*   **Screenshot Handling:** Pillow, NumPy, OpenCV, MSS
+*   **Screenshot Handling:** Pillow, NumPy, OpenCV
 *   **Hotkeys:** Pynput
 
 ## TODO
@@ -66,5 +66,4 @@ Built using:
 *   Ability to add custom context in ocr window for LLM translator
 
 ## Known issues
-*   On wayland screenshotting only works on primary monitor
 *   Text on checkable combo box for translation engines sometimes gets desynced (when you click on it, it shows correct values, just not on the "main" text)
