@@ -16,8 +16,9 @@ class ScreenshotController():
         self.screenshotOverlay.raise_()
         self.screenshotOverlay.activateWindow()
 
+        QApplication.setOverrideCursor(Qt.CursorShape.CrossCursor)
         image = self.screenshotOverlay.getImage()
-
+        QApplication.restoreOverrideCursor()
         self.screenshotOverlay.close()
         return image
     
@@ -39,8 +40,7 @@ class ScreenshotOverlay(QWidget):
             Qt.WindowType.FramelessWindowHint |
             Qt.WindowType.WindowStaysOnTopHint
         )
-        self.setWindowOpacity(0.35)
-        self.setStyleSheet("background-color: rgb(0, 0, 0);")
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         self.setMouseTracking(True)
 
         desktop_rect = QRect()
@@ -71,20 +71,31 @@ class ScreenshotOverlay(QWidget):
             self.update()
 
     def paintEvent(self, event):
-        if type(self.startPoint) != type(None) and type(self.currentPoint) != type(None):
-            painter = QPainter(self)
+        alpha = 90 # 90 = ~0.35 opacity (0-255)
+        painter = QPainter(self)
+
+        # black semitransparent background
+        painter.fillRect(self.rect(), QColor(0, 0, 0, alpha))  
+        
+        if self.isSelecting and self.startPoint and self.currentPoint:
+            rect = QRect(self.startPoint, self.currentPoint).normalized()
+
+            # Clear the area under the rectangle to fully transparent
+            # So our semitransparent blue doesn't blend with black
+            painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
+            painter.fillRect(rect, Qt.GlobalColor.transparent)
+            painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceOver)  # back to normal
+
             pen = QPen()
             pen.setWidth(2)
-            pen.setColor(QColor("#2560DF"))
+            pen.setColor(QColor(37, 96, 223, alpha)) # #2560DF
             painter.setPen(pen)
 
             brush = QBrush()
-            brush.setColor(QColor("#569FFF"))
+            brush = QBrush(QColor(86, 159, 255, alpha)) # #569FFF
             brush.setStyle(Qt.BrushStyle.SolidPattern)
             painter.setBrush(brush)
 
-            # transform startPoint, endPoint into x,y,w,h
-            rect = QRect(self.startPoint, self.currentPoint).normalized()
             painter.drawRect(rect)
 
     def reset_state(self):
