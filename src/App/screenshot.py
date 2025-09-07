@@ -137,7 +137,7 @@ class ScreenshotOverlay(QWidget):
                 screenshot_rect.x() + screenshot_rect.width(),
                 screenshot_rect.y() + screenshot_rect.height()
             )
-            screenshot = ImageGrab.grab(bbox=bbox)
+            screenshot = ImageGrab.grab(bbox=bbox, all_screens=True)
             
             # Convert to numpy array (OpenCV format)
             img = np.array(screenshot)
