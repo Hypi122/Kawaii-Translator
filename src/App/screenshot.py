@@ -16,9 +16,7 @@ class ScreenshotController():
         self.screenshotOverlay.raise_()
         self.screenshotOverlay.activateWindow()
 
-        QApplication.setOverrideCursor(Qt.CursorShape.CrossCursor)
         image = self.screenshotOverlay.getImage()
-        QApplication.restoreOverrideCursor()
         self.screenshotOverlay.close()
         return image
     
@@ -99,6 +97,7 @@ class ScreenshotOverlay(QWidget):
             painter.drawRect(rect)
 
     def reset_state(self):
+        QApplication.restoreOverrideCursor()
         self.startPoint = None
         self.endPoint = None
         self.currentPoint = None
@@ -111,6 +110,7 @@ class ScreenshotOverlay(QWidget):
     # So i did it fully with an LLM
     # Should I have dispatched worker in ScreenshotController.start_selection()?
     def getImage(self):
+        QApplication.setOverrideCursor(Qt.CursorShape.CrossCursor)
         # waits until selectionFinished is emitted
         loop = QEventLoop()
         self.selectionFinished.connect(loop.quit)
