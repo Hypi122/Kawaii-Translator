@@ -44,6 +44,16 @@ class OcrManager:
         return self._current_engine_name
 
     def swap_engine(self, name, **kwargs):
+        # Don't change engine if it's already the current one
+        if self._current_engine_name == name:
+            # Check if preset engines have the same parameters
+            if name in self._engine_presets:
+                preset_name = self._engine_presets[name]
+                if kwargs.get('preset_name') == preset_name:
+                    return
+            else:
+                return
+
         if self._current_engine is not None:
             del self._current_engine
             self._current_engine = None
