@@ -32,6 +32,8 @@ pip install .[all]
   `pip install .[openai]`
 - **[Google Translate](https://translate.google.com)** ([py-googletrans](https://github.com/ssut/py-googletrans)):
   `pip install .[google_translate]`
+- **[DeepLX](https://github.com/OwO-Network/DeepLX)**:
+  No additional installation required
 
 #### Bulk Installation
 - All OCR engines:

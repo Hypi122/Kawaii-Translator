@@ -3,6 +3,7 @@ from Translation.engines.abstract_engine import AbstractTranslationEngine
 from Translation.engines.dummy_engine import DummyTranslationEngine
 from Translation.engines.google_translate_engine import GoogleTranslateTranslationEngine
 from Translation.engines.openai_compatible_engine import OpenAiCompatibleTranslationEngine
+from Translation.engines.deeplx_engine import DeepLXTranslationEngine
 from App.settings_service import settings_service
 from PyQt6.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool, pyqtSlot
 
@@ -122,4 +123,5 @@ class TranslationManager:
 
 TranslationManager._registerEngine("Dummy", DummyTranslationEngine)
 TranslationManager._registerEngine("GoogleTranslate", GoogleTranslateTranslationEngine)
+TranslationManager._registerEngine("DeepLX", DeepLXTranslationEngine)
 TranslationManager.registerPresetEngines()

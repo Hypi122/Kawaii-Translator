@@ -51,7 +51,8 @@ Option 2 (description of option 2)
 "Translated text 2"
 
 etc.
-"""
+""",
+            "deeplx_api_url":"http://localhost:1188/translate"
         }
         self.settings = self.load_settings()
     

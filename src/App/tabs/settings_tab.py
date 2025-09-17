@@ -200,10 +200,29 @@ class SettingsTab(QWidget):
         openai2_layout.addWidget(self.translation_prompt)
         openai2_layout.addStretch()
 
+        # DeepLX Settings tab
+        deeplx_tab = QWidget()
+        deeplx_layout = QVBoxLayout(deeplx_tab)
+        
+        deeplx_group_box = QGroupBox("DeepLX API")
+        deeplx_group_layout = QVBoxLayout()
+        
+        self.deeplxUrlLabel = QLabel("DeepLX API URL")
+        self.deeplxUrlInput = QLineEdit()
+        
+        deeplx_group_layout.addWidget(self.deeplxUrlLabel)
+        deeplx_group_layout.addWidget(self.deeplxUrlInput)
+        deeplx_group_layout.addStretch()
+        
+        deeplx_group_box.setLayout(deeplx_group_layout)
+        deeplx_layout.addWidget(deeplx_group_box)
+        deeplx_layout.addStretch()
+        
         # Add tabs to tab widget
         settings_tabs.addTab(general_tab, "General")
         settings_tabs.addTab(openai_tab, "OpenAI Api")
         settings_tabs.addTab(openai2_tab, "OpenAI Api 2")
+        settings_tabs.addTab(deeplx_tab, "DeepLX")
 
         layout.addWidget(settings_tabs)
         
@@ -357,6 +376,11 @@ class SettingsTab(QWidget):
                 self.hotkey_inputs[action].setText(hotkey)
 
         self.loadOpenaiSettings()
+        self.loadDeepLXSettings()
+    
+    def loadDeepLXSettings(self):
+        deeplx_api_url = settings_service.get("deeplx_api_url")
+        self.deeplxUrlInput.setText(deeplx_api_url)     
     
     def loadOpenaiSettings(self):
         current_preset_translation = self.translation_preset_btn.currentText().strip()
@@ -456,13 +480,18 @@ class SettingsTab(QWidget):
 
         openai_api_ocr_key = self.openaiKeyOcrInput.text().strip()
         settings_service.set("ocr_presets."+current_preset_ocr+".key", openai_api_ocr_key)
-
+    
+    def save_deeplx(self):
+        deeplx_api_url = self.deeplxUrlInput.text().strip()
+        settings_service.set("deeplx_api_url", deeplx_api_url)
+    
     def save_settings(self):
         """Save all settings"""
         self.save_engines()
         self.save_language_settings()
         self.save_hotkeys()
         self.save_openai()
+        self.save_deeplx()
         # Save translation prompt
         settings_service.set("openai_translation_prompt", self.translation_prompt.toPlainText())
     
