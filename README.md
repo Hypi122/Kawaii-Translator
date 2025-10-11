@@ -44,7 +44,7 @@ pip install .[all]
 ## Usage
 You can run Kawaii Translator using:
 
-`python .\src\main.py`
+`python ./src/main.py`
 
 ## Tested On
 
