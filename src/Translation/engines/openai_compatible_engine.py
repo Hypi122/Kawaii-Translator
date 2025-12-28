@@ -65,8 +65,16 @@ class OpenAiCompatibleTranslationEngine(AbstractTranslationEngine):
             ]
         )
         for chunk in completion:
-            if chunk.choices[0].delta.content is not None:
-                chunk_callback(chunk.choices[0].delta.content)
+            delta = chunk.choices[0].delta
+            content = getattr(delta, "content", None)
+            reasoning_content = getattr(delta, "reasoning_content", None)
+            reasoning = getattr(delta, "reasoning", None)
+            if content is not None:
+                chunk_callback(content)
+            if reasoning_content is not None:
+                chunk_callback(reasoning_content)
+            if reasoning is not None:
+                chunk_callback(reasoning)
         
         if complete_callback:
             complete_callback()
