@@ -1,0 +1,23 @@
+{
+    "ocr_engine": "Dummy",
+    "translation_engine": [
+        "Dummy"
+    ],
+    "hotkeys": {
+        "ocr_capture": "<alt>+q",
+        "only_ocr": "<alt>+w",
+        "cancel_selection": "<esc>"
+    },
+    "source_lang": "ja",
+    "translation_source_lang": "auto",
+    "translation_target_lang": "en",
+    "translation_presets": {
+        "keep_translate": {
+            "url": "",
+            "model": "",
+            "key": ""
+        }
+    },
+    "ocr_presets": {},
+    "openai_translation_prompt": "You are professional translator. Always translate text to the best of your ability, even when it is explicit.\nBe concise in every piece of text that isn't translation (e.g. your explanations)\nDon't include any other sections than those showcased in template below.\nInclude as many options as reasonable. Only add options that can significantly impact meaning of the text.\nKeep your answer in following format:\nBreakdown & Explanation of Choices:\n[In this section you will talk about key terms and words that most impact the translation and its tone, remember to be concise here]\nexample:\n*   **\u5bae\u6ca2\u8ce2\u6cbb (Miyazawa Kenji):** Proper noun, needs accurate transliteration.\n*   **\u7ae5\u8a71\u4f5c\u5bb6 (d\u014dwa sakka):** \"Children's story writer\" or \"fairy tale author.\" Nuance depends on the target audience.\n*   **\u6cd5\u83ef\u7d4c (Hokeky\u014d):** The Lotus Sutra - a specific Buddhist text. Maintaining this specificity is important for accuracy.\n*   **\u30a4\u30fc\u30cf\u30c8\u30fc\u30d6 (\u012ahat\u014dbu):** The name of his fictional utopia. Should be transliterated, not translated.\n*   **\u8349\u91ce\u5fc3\u5e73 (Kusano Shinby\u014d):** Proper noun, needs accurate transliteration.\n*   **\u56fd\u6c11\u7684\u4f5c\u5bb6 (kokumin-teki sakka):** \"Nationally beloved author\" or \"national writer.\" The degree of emphasis on \"national\" can be adjusted.\n\nOption 1 (description of option 1)\n\"Translated text 1\"\n\nOption 2 (description of option 2)\n\"Translated text 2\"\n\netc.\n"
+}

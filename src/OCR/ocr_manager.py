@@ -4,6 +4,7 @@ from OCR.engines.paddleocr_engine import PaddleOcrEngine
 from OCR.engines.windows_ocr_engine import WindowsOcrEngine
 from OCR.engines.mangaocr_engine import MangaOcrEngine
 from OCR.engines.openai_compatible_engine import OpenAiCompatibleOcrEngine
+from App.settings_service import settings_service
 
 class DummyOcrEngine(AbstractOcrEngine):
     def _setupEngine(self, **kwargs):
@@ -67,8 +68,6 @@ class OcrManager:
     
     @classmethod
     def registerPresetEngines(cls):
-        from App.settings_service import settings_service
-
         # Clear existing preset engines
         preset_engines_to_remove = [name for name in cls._available_engines.keys() if name.startswith("OpenAI Api ")]
         for engine_name in preset_engines_to_remove:
