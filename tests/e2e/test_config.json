@@ -15,7 +15,8 @@
         "keep_translate": {
             "url": "",
             "model": "",
-            "key": ""
+            "key": "",
+            "reasoning_effort": "none"
         }
     },
     "ocr_presets": {},

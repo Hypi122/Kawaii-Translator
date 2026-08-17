@@ -133,6 +133,10 @@ class SettingsTab(QWidget):
         self.openaiKeyOcrInput = QLineEdit()
         self.openaiKeyOcrInput.setEchoMode(QLineEdit.EchoMode.Password)
         
+        self.openaiReasoningEffortOcrLabel = QLabel("Reasoning Effort")
+        self.openaiReasoningEffortOcrInput = QComboBox()
+        self.openaiReasoningEffortOcrInput.addItems(["none", "minimal", "low", "medium", "high", "xhigh", "max"])
+        
         ocr_layout.addWidget(self.ocr_preset_btn)
         ocr_layout.addLayout(ocr_preset_layout)
         ocr_layout.addWidget(self.openaiUrlOcrLabel)
@@ -141,6 +145,8 @@ class SettingsTab(QWidget):
         ocr_layout.addWidget(self.openaiModelOcrInput)
         ocr_layout.addWidget(self.openaiKeyOcrLabel)
         ocr_layout.addWidget(self.openaiKeyOcrInput)
+        ocr_layout.addWidget(self.openaiReasoningEffortOcrLabel)
+        ocr_layout.addWidget(self.openaiReasoningEffortOcrInput)
         ocr_layout.addStretch()
         
         ocr_group_box.setLayout(ocr_layout)
@@ -171,6 +177,10 @@ class SettingsTab(QWidget):
         self.openaiKeyTranslationLabel = QLabel("OpenAI API Key")
         self.openaiKeyTranslationInput = QLineEdit()
         self.openaiKeyTranslationInput.setEchoMode(QLineEdit.EchoMode.Password)
+        
+        self.openaiReasoningEffortTranslationLabel = QLabel("Reasoning Effort")
+        self.openaiReasoningEffortTranslationInput = QComboBox()
+        self.openaiReasoningEffortTranslationInput.addItems(["none", "minimal", "low", "medium", "high", "xhigh", "max"])
 
         translation_layout.addWidget(self.translation_preset_btn)
         translation_layout.addLayout(translation_preset_layout)
@@ -180,6 +190,8 @@ class SettingsTab(QWidget):
         translation_layout.addWidget(self.openaiModelTranslationInput)
         translation_layout.addWidget(self.openaiKeyTranslationLabel)
         translation_layout.addWidget(self.openaiKeyTranslationInput)
+        translation_layout.addWidget(self.openaiReasoningEffortTranslationLabel)
+        translation_layout.addWidget(self.openaiReasoningEffortTranslationInput)
         translation_layout.addStretch()
         
         translation_group_box.setLayout(translation_layout)
@@ -220,7 +232,7 @@ class SettingsTab(QWidget):
         if ok and name.strip():
             name = name.strip()
             settings_service.set("translation_presets."+name,
-                {"url": "", "model": "", "key": ""})
+                {"url": "", "model": "", "key": "", "reasoning_effort": "none"})
 
             self.translation_preset_btn.addItem(name)
             self.translation_preset_btn.setCurrentIndex(self.translation_preset_btn.count() - 1)
@@ -236,7 +248,7 @@ class SettingsTab(QWidget):
         if ok and name.strip():
             name = name.strip()
             settings_service.set("ocr_presets."+name,
-                {"url": "", "model": "", "key": ""})
+                {"url": "", "model": "", "key": "", "reasoning_effort": "none"})
 
             self.ocr_preset_btn.addItem(name)
             self.ocr_preset_btn.setCurrentIndex(self.ocr_preset_btn.count() - 1)
@@ -368,6 +380,9 @@ class SettingsTab(QWidget):
 
         openai_api_translation_key = settings_service.get("translation_presets."+current_preset_translation+".key")
         self.openaiKeyTranslationInput.setText(openai_api_translation_key)
+
+        openai_api_translation_reasoning_effort = settings_service.get("translation_presets."+current_preset_translation+".reasoning_effort") or "none"
+        self.openaiReasoningEffortTranslationInput.setCurrentText(openai_api_translation_reasoning_effort)
         
         current_preset_ocr = self.ocr_preset_btn.currentText().strip()
         openai_api_ocr_url = settings_service.get("ocr_presets."+current_preset_ocr+".url")
@@ -378,6 +393,9 @@ class SettingsTab(QWidget):
 
         openai_api_ocr_key = settings_service.get("ocr_presets."+current_preset_ocr+".key")
         self.openaiKeyOcrInput.setText(openai_api_ocr_key)
+
+        openai_api_ocr_reasoning_effort = settings_service.get("ocr_presets."+current_preset_ocr+".reasoning_effort") or "none"
+        self.openaiReasoningEffortOcrInput.setCurrentText(openai_api_ocr_reasoning_effort)
         
     def save_language_settings(self):
         """Save the language settings"""
@@ -445,6 +463,9 @@ class SettingsTab(QWidget):
 
         openai_api_translation_key = self.openaiKeyTranslationInput.text().strip()
         settings_service.set("translation_presets."+current_preset_translation+".key", openai_api_translation_key)
+
+        openai_api_translation_reasoning_effort = self.openaiReasoningEffortTranslationInput.currentText().strip()
+        settings_service.set("translation_presets."+current_preset_translation+".reasoning_effort", openai_api_translation_reasoning_effort)
         
         current_preset_ocr = self.ocr_preset_btn.currentText().strip()
         # Save OCR settings
@@ -456,6 +477,9 @@ class SettingsTab(QWidget):
 
         openai_api_ocr_key = self.openaiKeyOcrInput.text().strip()
         settings_service.set("ocr_presets."+current_preset_ocr+".key", openai_api_ocr_key)
+
+        openai_api_ocr_reasoning_effort = self.openaiReasoningEffortOcrInput.currentText().strip()
+        settings_service.set("ocr_presets."+current_preset_ocr+".reasoning_effort", openai_api_ocr_reasoning_effort)
 
     def save_settings(self):
         """Save all settings"""

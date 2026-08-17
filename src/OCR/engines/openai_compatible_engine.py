@@ -20,6 +20,7 @@ class OpenAiCompatibleOcrEngine(AbstractOcrEngine):
             base_url = preset.get("url") or ""
             api_key = preset.get("key") or ""
             self.model = preset.get("model") or ""
+            self.reasoning_effort = preset.get("reasoning_effort") or "none"
         else:
             # Fallback to default preset if specified preset not found
             if presets and "default" in presets:
@@ -27,10 +28,12 @@ class OpenAiCompatibleOcrEngine(AbstractOcrEngine):
                 base_url = preset.get("url") or ""
                 api_key = preset.get("key") or ""
                 self.model = preset.get("model") or ""
+                self.reasoning_effort = preset.get("reasoning_effort") or "none"
             else:
                 base_url = ""
                 api_key = ""
                 self.model = ""
+                self.reasoning_effort = "none"
             
         self._client = OpenAI(
         #   base_url="https://openrouter.ai/api/v1",
@@ -57,7 +60,8 @@ class OpenAiCompatibleOcrEngine(AbstractOcrEngine):
                                     { "type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{bb}"}}
                                 ]
                         }
-                ]
+                ],
+                reasoning_effort=self.reasoning_effort
             )
             return completion.choices[0].message.content
         else:
