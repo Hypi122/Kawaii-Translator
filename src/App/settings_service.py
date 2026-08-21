@@ -7,6 +7,7 @@ class SettingsService:
         self.default_settings = {
             "ocr_engine": "Dummy",
             "translation_engine": "Dummy",
+            "reverse_ocr_lines": False,
             "hotkeys": {
                 "ocr_capture": "<alt>+q",
                 "only_ocr": "<alt>+w",

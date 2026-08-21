@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from OCR.ocr_manager import OcrManager, DummyOcrEngine
+from OCR.ocr_manager import OcrManager, DummyOcrEngine, _reverse_blocks
 
 @pytest.fixture
 def mock_settings(mocker):
@@ -45,6 +45,57 @@ class TestOcrManagerPredict:
         result = manager.predict(sample_image)
 
         assert result == "Dummy OCR'd Text"
+
+
+@pytest.fixture
+def stub_engine_class(mocker):
+    engine_class = mocker.MagicMock()
+    OcrManager._registerEngine("StubTestEngine", engine_class)
+    yield engine_class
+    del OcrManager._available_engines["StubTestEngine"]
+
+
+class TestReverseBlocks:
+    def test_single_line_unchanged(self):
+        assert _reverse_blocks("hello") == "hello"
+
+    def test_lines_reversed_within_block(self):
+        assert _reverse_blocks("a\nb\nc") == "c\nb\na"
+
+    def test_lines_reversed_per_block_and_block_order_preserved(self):
+        assert _reverse_blocks("a\nb\n\nc\nd") == "b\na\n\nd\nc"
+
+    def test_empty_string_unchanged(self):
+        assert _reverse_blocks("") == ""
+
+    def test_none_unchanged(self):
+        assert _reverse_blocks(None) is None
+
+    def test_trailing_newline_dropped(self):
+        assert _reverse_blocks("a\n") == "a"
+
+    def test_crlf_lines_normalized_and_reversed(self):
+        assert _reverse_blocks("a\r\nb") == "b\na"
+
+
+class TestOcrManagerPredictReversal:
+    def test_predict_reverses_lines_when_enabled(self, mock_settings, stub_engine_class, sample_image):
+        mock_settings.get.return_value = True
+        stub_engine_class.return_value.predict.return_value = "line1\nline2\n\nline3"
+        manager = OcrManager("StubTestEngine")
+
+        result = manager.predict(sample_image)
+
+        assert result == "line2\nline1\n\nline3"
+
+    def test_predict_keeps_order_when_disabled(self, mock_settings, stub_engine_class, sample_image):
+        mock_settings.get.return_value = False
+        stub_engine_class.return_value.predict.return_value = "line1\nline2\n\nline3"
+        manager = OcrManager("StubTestEngine")
+
+        result = manager.predict(sample_image)
+
+        assert result == "line1\nline2\n\nline3"
 
 
 class TestOcrManagerAvailableEngines:

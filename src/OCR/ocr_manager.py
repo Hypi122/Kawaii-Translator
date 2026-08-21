@@ -6,6 +6,20 @@ from OCR.engines.mangaocr_engine import MangaOcrEngine
 from OCR.engines.openai_compatible_engine import OpenAiCompatibleOcrEngine
 from App.settings_service import settings_service
 
+def _reverse_blocks(text):
+    """Reverse the order of lines within each block.
+
+    Blocks are separated by blank lines (``\\n\\n``). Reversing is applied
+    per-block so that block boundaries are preserved. This is useful for
+    right-to-left layouts where some OCRs (like PaddleOCR) returns lines
+    in the opposite order than the one we want.
+    """
+    if not text:
+        return text
+    blocks = text.split("\n\n")
+    reversed_blocks = ["\n".join(reversed(block.splitlines())) for block in blocks]
+    return "\n\n".join(reversed_blocks)
+
 class DummyOcrEngine(AbstractOcrEngine):
     def _setupEngine(self, **kwargs):
         print("Loading Dummy OCR Engine")
@@ -36,8 +50,11 @@ class OcrManager:
             cls._engine_presets[name] = preset_name
 
     def predict(self, image):
-        return self._current_engine.predict(image)
-    
+        text = self._current_engine.predict(image)
+        if settings_service.get("reverse_ocr_lines"):
+            text = _reverse_blocks(text)
+        return text
+
     def available_engines(self):
         return list(self._available_engines.keys())
 

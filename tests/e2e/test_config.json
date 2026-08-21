@@ -3,6 +3,7 @@
     "translation_engine": [
         "Dummy"
     ],
+    "reverse_ocr_lines": false,
     "hotkeys": {
         "ocr_capture": "<alt>+q",
         "only_ocr": "<alt>+w",

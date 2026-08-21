@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QLabel, QFormLayout, QPushButton, QHBoxLayout, QLineEdit, QTabWidget, QGroupBox, QInputDialog, QMessageBox, QTextEdit
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QLabel, QFormLayout, QPushButton, QHBoxLayout, QLineEdit, QTabWidget, QGroupBox, QInputDialog, QMessageBox, QTextEdit, QCheckBox
 from PyQt6.QtCore import QObject, QThread, pyqtSignal, pyqtSlot, QRunnable, QThreadPool, Qt
 from PyQt6.QtGui import QKeySequence
 
@@ -70,7 +70,10 @@ class SettingsTab(QWidget):
         # OCR Language Settings
         self.ocrLanguageLabel = QLabel("OCR Language")
         self.ocrLanguageInput = QLineEdit()
-        
+
+        # Reverse OCR line order
+        self.reverseOcrLinesCheckbox = QCheckBox("Reverse OCR line order")
+
         # Translation Output Language Settings
         self.translationLanguageLabel = QLabel("Translation Output Language")
         self.translationLanguageInput = QLineEdit()
@@ -85,6 +88,7 @@ class SettingsTab(QWidget):
         ocrLayout.addWidget(self.translateEngineBtn)
         ocrLayout.addWidget(self.ocrLanguageLabel)
         ocrLayout.addWidget(self.ocrLanguageInput)
+        ocrLayout.addWidget(self.reverseOcrLinesCheckbox)
         ocrLayout.addWidget(self.translationInputLanguageLabel)
         ocrLayout.addWidget(self.translationInputLanguageInput)
         ocrLayout.addWidget(self.translationLanguageLabel)
@@ -349,7 +353,10 @@ class SettingsTab(QWidget):
         # Load OCR language setting
         ocr_language = settings_service.get("source_lang")
         self.ocrLanguageInput.setText(ocr_language)
-        
+
+        # Load reverse OCR line order setting
+        self.reverseOcrLinesCheckbox.setChecked(settings_service.get("reverse_ocr_lines"))
+
         # Load translation input language setting
         translation_input_language = settings_service.get("translation_source_lang")
         self.translationInputLanguageInput.setText(translation_input_language)
@@ -447,6 +454,8 @@ class SettingsTab(QWidget):
     def save_engines(self):
         ocr_engine = self.ocrEngineBtn.currentText().strip()
         settings_service.set("ocr_engine", ocr_engine)
+
+        settings_service.set("reverse_ocr_lines", self.reverseOcrLinesCheckbox.isChecked())
 
         translation_engines = self.translateEngineBtn.checkedItemsText()
         settings_service.set("translation_engine", translation_engines)
