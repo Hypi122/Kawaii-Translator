@@ -1,6 +1,6 @@
 """
-Warning: No humans were involved in the making of this file. 
-That also means no creativity, wit, or anything resembling a good comment. 
+Warning: No humans were involved in the making of this file.
+That also means no creativity, wit, or anything resembling a good comment.
 You have been warned.
 """
 
@@ -34,10 +34,10 @@ class CheckableComboBox(QComboBox):
 
         self.view().viewport().installEventFilter(self)
 
-        self._popup_should_hide = True
+        self._disable_keeps_popup = False
 
     def eventFilter(self, source, event):
-        # *** NEW SECTION: Handle clicks on the line edit itself ***
+        # Handle clicks on the line edit itself
         if source == self.lineEdit() and event.type() == QEvent.Type.MouseButtonPress:
             # Toggle the popup's visibility when the line edit is clicked
             if self.view().isVisible():
@@ -46,25 +46,32 @@ class CheckableComboBox(QComboBox):
                 self.showPopup()
             return True  # Event handled
 
-        # --- Existing section: Handle clicks within the dropdown list ---
-        if source == self.view().viewport() and event.type() == QEvent.Type.MouseButtonRelease:
-            index = self.view().indexAt(event.pos())
-            if index.isValid():
-                item = self.model.itemFromIndex(index)
-                if item.isCheckable():
-                    new_state = Qt.CheckState.Unchecked if item.checkState() == Qt.CheckState.Checked else Qt.CheckState.Checked
-                    item.setCheckState(new_state)
-                    
-                    self._popup_should_hide = False 
-                    return True # Event handled
-        
+        # Handle clicks within the dropdown list
+        if source == self.view().viewport():
+            if event.type() == QEvent.Type.MouseButtonRelease:
+                index = self.view().indexAt(event.pos())
+                if index.isValid():
+                    item = self.model.itemFromIndex(index)
+                    if item.isCheckable():
+                        new_state = Qt.CheckState.Unchecked if item.checkState() == Qt.CheckState.Checked else Qt.CheckState.Checked
+                        item.setCheckState(new_state)
+
+                        return True  # Event handled
+
         # Pass all other events to the base class's eventFilter
         return super().eventFilter(source, event)
 
+    def setEnabled(self, enabled):
+        # Qt closes an open popup when disabled; while disabled, hide
+        # attempts are ignored so the popup stays open (inert) until
+        # the widget is re-enabled.
+        self._disable_keeps_popup = not enabled
+        super().setEnabled(enabled)
+
     def hidePopup(self):
-        if self._popup_should_hide:
-            super().hidePopup()
-        self._popup_should_hide = True
+        if self._disable_keeps_popup:
+            return
+        super().hidePopup()
 
     def addItem(self, text, userData=None, checked=False):
         item = QStandardItem(text)
@@ -83,6 +90,8 @@ class CheckableComboBox(QComboBox):
         self._update_text_and_emit_signal()
 
     def _update_text_and_emit_signal(self):
+        # Detach currentIndex so Qt doesn't clobber the multi-select text
+        self.setCurrentIndex(-1)
         checked_items = self.checkedItemsText()
         if checked_items:
             self.lineEdit().setText(", ".join(checked_items))
