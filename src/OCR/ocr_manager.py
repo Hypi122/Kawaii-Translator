@@ -5,6 +5,7 @@ from OCR.engines.windows_ocr_engine import WindowsOcrEngine
 from OCR.engines.mangaocr_engine import MangaOcrEngine
 from OCR.engines.openai_compatible_engine import OpenAiCompatibleOcrEngine
 from App.settings_service import settings_service
+from Util.platform import is_windows
 
 class DummyOcrEngine(AbstractOcrEngine):
     def _setupEngine(self, **kwargs):
@@ -18,6 +19,12 @@ class OcrManager:
     _engine_presets = {}  # Store preset names for engines
 
     def __init__(self, name, **kwargs):
+        if name not in self._available_engines:
+            fallback = next(iter(self._available_engines), None)
+            if fallback is None:
+                raise KeyError(name)
+            print(f"OCR engine '{name}' not available on this platform, falling back to '{fallback}'")
+            name = fallback
         engine_class = self._available_engines[name]
         # Add preset name to kwargs if this is a preset engine
         if name in self._engine_presets:
@@ -83,6 +90,7 @@ class OcrManager:
 
 OcrManager._registerEngine("Dummy", DummyOcrEngine)
 OcrManager._registerEngine("PaddleOCR", PaddleOcrEngine)
-OcrManager._registerEngine("WindowsOCR", WindowsOcrEngine)
+if is_windows():
+    OcrManager._registerEngine("WindowsOCR", WindowsOcrEngine)
 OcrManager._registerEngine("MangaOCR", MangaOcrEngine)
 OcrManager.registerPresetEngines()
