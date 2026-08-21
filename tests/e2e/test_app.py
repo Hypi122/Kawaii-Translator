@@ -1,6 +1,8 @@
 import pytest
 from PyQt6.QtCore import Qt, QPoint, QTimer
+from Util.platform import is_windows
 
+@pytest.mark.skipif(not is_windows(), reason="region capture via ImageGrab unsupported on Linux; pending capture backend rework")
 def test_app_ocr_capture_hotkey_shows_window_with_ocr_and_translation(main_window, qtbot):
     # Use QTimer to schedule clicks after the event loop in getImage() is running
     # getImage() is blocking (loop.exec())
@@ -29,6 +31,7 @@ def test_app_ocr_capture_hotkey_shows_window_with_ocr_and_translation(main_windo
     assert "Dummy" in main_window.ocrWindow.translationWidgets
     assert main_window.ocrWindow.translationWidgets["Dummy"].toPlainText() == "This is dummy translation"
 
+@pytest.mark.skipif(not is_windows(), reason="region capture via ImageGrab unsupported on Linux; pending capture backend rework")
 def test_app_ocr_only_hotkey_shows_window_with_only_ocr(main_window, qtbot):
     # see comment in: test_app_ocr_capture_hotkey_shows_window_with_ocr_and_translation
     QTimer.singleShot(100, lambda: qtbot.mouseClick(

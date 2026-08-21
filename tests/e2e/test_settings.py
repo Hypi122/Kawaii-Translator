@@ -2,6 +2,7 @@ import json
 import pytest
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QPushButton, QTabWidget, QInputDialog, QMessageBox
+from Util.platform import is_windows
 
 def get_settings_subtabs(settings_tab):
     tab_widgets = settings_tab.findChildren(QTabWidget)
@@ -18,6 +19,7 @@ def get_save_button(settings_tab):
     return next(btn for btn in buttons if btn.text() == "Save Settings")
 
 class TestGeneralTab:
+    @pytest.mark.skipif(not is_windows(), reason="WindowsOCR engine is only registered on Windows")
     def test_change_ocr_engine_switches_to_windows_ocr(self, main_window, qtbot):
         settings_tab = main_window.tabs.widget(0)
         ocr_engine_btn = settings_tab.ocrEngineBtn
@@ -64,6 +66,7 @@ class TestGeneralTab:
         assert "Dummy" in active_engines
         assert "GoogleTranslate" in active_engines
     
+    @pytest.mark.skipif(not is_windows(), reason="WindowsOCR engine is only registered on Windows")
     def test_save_settings_saves_changes_to_disk(self, main_window, qtbot, mock_settings, test_settings_path):
         settings_tab = main_window.tabs.widget(0)
         

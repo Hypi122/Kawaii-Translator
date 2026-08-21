@@ -2,6 +2,7 @@ from pynput import keyboard
 from PyQt6.QtCore import QObject, pyqtSignal
 
 from App.settings_service import settings_service
+from Util.platform import is_wayland
 
 class HotkeyManager(QObject):
     # Signal emitted when a hotkey is triggered
@@ -28,6 +29,9 @@ class HotkeyManager(QObject):
     def start_listening(self):
         # Stop any existing listeners
         self.stop_listening()
+        
+        if is_wayland():
+            print("Warning: global hotkeys may not work under Wayland; pynput support for Wayland is limited.")
         
         # Create a new listener
         self.listener = keyboard.GlobalHotKeys({

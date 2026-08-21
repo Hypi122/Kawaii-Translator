@@ -91,3 +91,14 @@ class TestHotkeyManagerSignals:
             hotkey_mapping["<alt>+q"]()
         
         assert blocker.args[0] == "ocr_capture"
+
+class TestHotkeyManagerWaylandWarning:
+    def test_start_listening_warns_under_wayland(self, mocker, mock_settings, mock_keyboard, capsys):
+        mocker.patch("App.hotkey_manager.is_wayland", return_value=True)
+        HotkeyManager()
+        assert "Wayland" in capsys.readouterr().out
+
+    def test_start_listening_no_warning_when_not_wayland(self, mocker, mock_settings, mock_keyboard, capsys):
+        mocker.patch("App.hotkey_manager.is_wayland", return_value=False)
+        HotkeyManager()
+        assert "Wayland" not in capsys.readouterr().out

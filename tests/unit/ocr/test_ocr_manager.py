@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 
 from OCR.ocr_manager import OcrManager, DummyOcrEngine
+from Util.platform import is_windows
 
 @pytest.fixture
 def mock_settings(mocker):
@@ -34,7 +35,13 @@ class TestOcrManagerInit:
         manager = OcrManager("Dummy")
         assert manager.getCurrentEngine() == "Dummy"
 
-    def test_init_invalid_engine_raises_keyerror(self, mock_settings):
+    def test_init_unregistered_engine_falls_back_to_first_registered(self, mock_settings, capsys):
+        manager = OcrManager("NonExistentEngine")
+        assert manager.getCurrentEngine() == "Dummy"
+        assert "NonExistentEngine" in capsys.readouterr().out
+
+    def test_init_empty_registry_raises_keyerror(self, mock_settings, mocker):
+        mocker.patch.dict(OcrManager._available_engines, clear=True)
         with pytest.raises(KeyError):
             OcrManager("NonExistentEngine")
 
@@ -51,7 +58,15 @@ class TestOcrManagerAvailableEngines:
     def test_available_engines_includes_registered_engines(self, mock_settings):
         manager = OcrManager("Dummy")
         engines = manager.available_engines()
-        assert engines == ['Dummy', 'PaddleOCR', 'WindowsOCR', 'MangaOCR']
+        expected = ['Dummy', 'PaddleOCR', 'MangaOCR']
+        if is_windows():
+            expected.insert(2, 'WindowsOCR')
+        assert engines == expected
+
+    @pytest.mark.skipif(is_windows(), reason="WindowsOCR engine is only registered on Windows")
+    def test_available_engines_excludes_windows_ocr_off_windows(self, mock_settings):
+        manager = OcrManager("Dummy")
+        assert "WindowsOCR" not in manager.available_engines()
 
 
 class TestOcrManagerGetCurrentEngine:

@@ -9,3 +9,6 @@ __pycache__/
 venv/*
 test.py
 config.json
+.venv/
+build/
+*.egg-info
