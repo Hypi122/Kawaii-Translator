@@ -1,9 +1,16 @@
-import pytest
+import numpy as np
 from PyQt6.QtCore import Qt, QPoint, QTimer
-from Util.platform import is_windows
 
-@pytest.mark.skipif(not is_windows(), reason="region capture via ImageGrab unsupported on Linux; pending capture backend rework")
-def test_app_ocr_capture_hotkey_shows_window_with_ocr_and_translation(main_window, qtbot):
+from App import capture as capture_mod
+
+def test_app_ocr_capture_hotkey_shows_window_with_ocr_and_translation(main_window, qtbot, monkeypatch):
+    # Inject a fake capture backend — never touch the real portal/D-Bus from tests.
+    class _FakeBackend:
+        def capture(self):
+            return capture_mod.CapturedScreen(
+                image=np.full((1080, 1920, 3), 200, dtype=np.uint8), scale_x=1.0, scale_y=1.0)
+    monkeypatch.setattr(capture_mod, "get_capture_backend", lambda: _FakeBackend())
+
     # Use QTimer to schedule clicks after the event loop in getImage() is running
     # getImage() is blocking (loop.exec())
     QTimer.singleShot(100, lambda: qtbot.mouseClick(
@@ -31,8 +38,14 @@ def test_app_ocr_capture_hotkey_shows_window_with_ocr_and_translation(main_windo
     assert "Dummy" in main_window.ocrWindow.translationWidgets
     assert main_window.ocrWindow.translationWidgets["Dummy"].toPlainText() == "This is dummy translation"
 
-@pytest.mark.skipif(not is_windows(), reason="region capture via ImageGrab unsupported on Linux; pending capture backend rework")
-def test_app_ocr_only_hotkey_shows_window_with_only_ocr(main_window, qtbot):
+def test_app_ocr_only_hotkey_shows_window_with_only_ocr(main_window, qtbot, monkeypatch):
+    # Inject a fake capture backend — never touch the real portal/D-Bus from tests.
+    class _FakeBackend:
+        def capture(self):
+            return capture_mod.CapturedScreen(
+                image=np.full((1080, 1920, 3), 200, dtype=np.uint8), scale_x=1.0, scale_y=1.0)
+    monkeypatch.setattr(capture_mod, "get_capture_backend", lambda: _FakeBackend())
+
     # see comment in: test_app_ocr_capture_hotkey_shows_window_with_ocr_and_translation
     QTimer.singleShot(100, lambda: qtbot.mouseClick(
         main_window.screenshot_controller.screenshotOverlay,
@@ -56,7 +69,14 @@ def test_app_ocr_only_hotkey_shows_window_with_only_ocr(main_window, qtbot):
     assert "Dummy" not in main_window.ocrWindow.translationWidgets
     assert len(main_window.ocrWindow.translationWidgets) == 0
 
-def test_app_cancel_selection_cancels_screenshot_selection(main_window, qtbot, mocker):
+def test_app_cancel_selection_cancels_screenshot_selection(main_window, qtbot, mocker, monkeypatch):
+    # Inject a fake capture backend — never touch the real portal/D-Bus from tests.
+    class _FakeBackend:
+        def capture(self):
+            return capture_mod.CapturedScreen(
+                image=np.full((1080, 1920, 3), 200, dtype=np.uint8), scale_x=1.0, scale_y=1.0)
+    monkeypatch.setattr(capture_mod, "get_capture_backend", lambda: _FakeBackend())
+
     spy_cancel = mocker.spy(main_window.screenshot_controller, 'cancel_selection')
     
     QTimer.singleShot(100, lambda:main_window.hotkey_manager.hotkey_triggered.emit('cancel_selection'))
