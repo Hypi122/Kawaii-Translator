@@ -50,6 +50,8 @@ You can run Kawaii Translator using:
 
 Region selection on Linux captures the whole desktop first and lets you select on that frozen image. On Wayland the first capture triggers a system permission dialog — allow it (and optionally remember the choice) so subsequent captures are silent. This uses xdg-desktop-portal, which ships with modern GNOME and KDE desktops.
 
+On multi-monitor setups the selection is per-screen: one overlay window is shown per monitor, each displaying its monitor's slice of the frozen desktop, and a selection cannot span monitors — a Wayland compositor limitation (compositors map each window to a single output) and an accepted simplification on X11.
+
 ## Tested On
 
 This project has been tested on Python versions 3.13.6 and 3.9.7.
