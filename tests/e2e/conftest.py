@@ -1,10 +1,14 @@
 import json
+from pathlib import Path
 import pytest
 from OCR.ocr_manager import OcrManager
 from Translation.translation_manager import TranslationManager, TranslationSignals
 from App.main_window import MainWindow
 from App.settings_service import SettingsService
 from App.tabs.settings_tab import SettingsTab
+
+_TRACKED_CONFIG = Path(__file__).resolve().parent / "test_config.json"
+_TRACKED_CONFIG_ORIGINAL_BYTES = _TRACKED_CONFIG.read_bytes()
 
 @pytest.fixture(autouse=True)
 def reset_test_config(test_settings_path):
@@ -51,8 +55,14 @@ etc.
         json.dump(default_config, f, indent=4)
 
 @pytest.fixture(scope="session")
-def test_settings_path():
-    return "tests/e2e/test_config.json"
+def test_settings_path(tmp_path_factory):
+    return str(tmp_path_factory.mktemp("e2e-config") / "test_config.json")
+
+@pytest.fixture(autouse=True, scope="session")
+def _guard_tracked_e2e_config():
+    """Fail the session if the tracked test_config.json was modified."""
+    yield
+    assert _TRACKED_CONFIG.read_bytes() == _TRACKED_CONFIG_ORIGINAL_BYTES, "tracked tests/e2e/test_config.json was modified during the e2e session"
 
 @pytest.fixture
 def mock_settings(mocker, test_settings_path):
