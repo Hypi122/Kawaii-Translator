@@ -1,9 +1,40 @@
 import json
 import os
+import shutil
+
+from PyQt6.QtCore import QStandardPaths
+
+# Qt config-location probe findings (PyQt6 6.11.1, Linux):
+# - writableLocation(AppConfigLocation) works WITHOUT a QCoreApplication instance.
+# - The app/org component is appended whenever setApplicationName/setOrganizationName
+#   were called (even pre-instance); with no names set the base is the plain config
+#   dir. It never creates the directory.
+# - XDG_CONFIG_HOME is re-read on every call; no caching in either state.
+# Since nothing here sets Qt app/org names, the base is the plain config dir, so we
+# append the app dir manually - idempotently, guard against duplication should an app
+# name ever be set.
+
+APP_DIR_NAME = "kawaii-translator"
+CONFIG_FILENAME = "config.json"
+
+def _qt_app_config_location() -> str:
+    return QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppConfigLocation)
+
+def default_config_path() -> str:
+    base = _qt_app_config_location().rstrip("/\\")
+    if not base:
+        base = os.getcwd()  # Qt returned "" (e.g. unset HOME); use CWD for a deterministic absolute path
+    if os.path.basename(base) != APP_DIR_NAME:
+        base = os.path.join(base, APP_DIR_NAME)
+    return os.path.join(base, CONFIG_FILENAME)
 
 class SettingsService:
-    def __init__(self, config_path: str = "config.json"):
-        self.config_path = config_path
+    def __init__(self, config_path=None):
+        if config_path is None:
+            self.config_path = default_config_path()
+            self._migrate_legacy_config()
+        else:
+            self.config_path = config_path
         self.default_settings = {
             "ocr_engine": "Dummy",
             "translation_engine": "Dummy",
@@ -54,6 +85,54 @@ etc.
 """
         }
         self.settings = self.load_settings()
+
+    def _migrate_legacy_config(self):
+        legacy_path = "config.json"
+        tmp_path = self.config_path + ".migrate-tmp"
+        try:
+            if os.path.exists(self.config_path):
+                return
+            if not os.path.exists(legacy_path):
+                return
+            try:
+                with open(legacy_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                if not isinstance(data, dict):
+                    print("Legacy config.json found but not a valid settings object; skipping migration.")
+                    return
+            except Exception as e:
+                print(f"Legacy config.json found but not readable/valid ({e}); skipping migration.")
+                return
+            parent = os.path.dirname(self.config_path)
+            if parent:
+                os.makedirs(parent, exist_ok=True)
+            shutil.copy2(legacy_path, tmp_path)
+            try:
+                with open(tmp_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+            except Exception as e:
+                try:
+                    os.remove(tmp_path)
+                except OSError:
+                    pass
+                print(f"Legacy config.json found but not readable/valid ({e}); skipping migration.")
+                return
+            if not isinstance(data, dict):
+                try:
+                    os.remove(tmp_path)
+                except OSError:
+                    pass
+                print("Legacy config.json found but not a valid settings object; skipping migration.")
+                return
+            os.replace(tmp_path, self.config_path)
+            os.replace(legacy_path, legacy_path + ".migrated")
+            print(f"Migrated legacy config.json to {self.config_path} (original kept as config.json.migrated)")
+        except Exception as e:
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+            print(f"Config migration failed ({e}).")
     
     def load_settings(self):
         """Load settings from config file or create with defaults if they dont exist."""
@@ -89,6 +168,9 @@ etc.
             settings = self.settings
 
         try:
+            d = os.path.dirname(self.config_path)
+            if d:
+                os.makedirs(d, exist_ok=True)
             with open(self.config_path, 'w', encoding='utf-8') as f:
                 json.dump(settings, f, indent=4)
         except IOError as e:
