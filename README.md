@@ -46,6 +46,10 @@ You can run Kawaii Translator using:
 
 `python ./src/main.py`
 
+## Configuration
+
+Configuration is stored in the OS-standard application config location (`~/.config/kawaii-translator/config.json` on Linux, where `XDG_CONFIG_HOME` is honored when set; `AppData\Roaming\kawaii-translator\config.json` on Windows; `~/Library/Preferences/kawaii-translator/config.json` on macOS). When no config exists in the new location, an existing `config.json` in the working directory is migrated automatically, with the original kept as `config.json.migrated` as a backup.
+
 ## Tested On
 
 This project has been tested on Python versions 3.13.6 and 3.9.7.
